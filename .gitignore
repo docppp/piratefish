@@ -1,0 +1,24 @@
+# Generated at install time — contain host paths and secrets
+.env
+docker-compose.yml
+install-report.txt
+state.json
+piratefish-start.sh
+piratefish-start.bat
+piratefish-start.command
+piratefish-stop.sh
+piratefish-stop.bat
+piratefish-stop.command
+.install.lock
+
+.idea/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+build/
+dist/
+demo/
+.webview/
+*.spec.bak

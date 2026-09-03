@@ -1,0 +1,6 @@
+# The installer uses only the Python standard library at runtime, so it can run
+# on a fresh machine without `pip install`. `requests` is optional; if present it
+# is used, otherwise the built-in urllib-based client takes over.
+#
+# Optional (only needed if you want to build a standalone executable):
+#   pyinstaller>=6.0

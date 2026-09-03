@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PirateFish Arr Stack Installer</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>`
+<div id="app">
+  <header class="topbar">
+    <h1>PirateFish Arr Stack Installer</h1>
+    <div class="env" id="envline">detecting environment…</div>
+  </header>
+
+  <div class="steps" id="steps">
+    <div class="step" data-step="welcome">1 · Welcome</div>
+    <div class="step" data-step="config">2 · Configure</div>
+    <div class="step" data-step="install">3 · Install</div>
+    <div class="step" data-step="done">4 · Ready</div>
+    <div class="step" data-step="trackers">5 · Trackers</div>
+    <div class="step" data-step="subtitles">6 · Subtitles</div>
+    <div class="step" data-step="extras">7 · Quality</div>
+    <div class="step" data-step="finish">8 · Finish</div>
+  </div>
+
+  <main>
+    <!-- WELCOME -->
+    <section class="page" id="page-welcome">
+      <h2>Welcome</h2>
+      <p class="sub">This will install and auto-configure your complete *Arr media stack.</p>
+      <div class="card" id="envcard">Checking Docker &amp; environment…</div>
+      <div class="actions"><button id="btn-welcome-next">Get started →</button></div>
+    </section>
+
+    <!-- CONFIG -->
+    <section class="page hidden" id="page-config">
+      <h2>Configuration</h2>
+      <p class="sub">Just a few essentials. Everything else is automatic.</p>
+      <div class="card">
+        <label class="field">
+          <span id="path-label">Data path — one folder for Torr / Media / Arr (keep it on one disk)</span>
+          <div class="row">
+            <input type="text" id="f-path" placeholder="/mnt/media/ArrStack">
+            <button class="secondary" id="btn-browse" style="flex:0 0 auto;">Browse…</button>
+          </div>
+          <div class="hint" id="path-hint"></div>
+        </label>
+        <div class="row">
+          <label class="field"><span>Timezone</span><input type="text" id="f-tz"></label>
+          <label class="field"><span>LAN subnet (auth bypass)</span><input type="text" id="f-subnet"></label>
+        </div>
+        <div class="row">
+          <label class="field"><span>Web UI username</span><input type="text" id="f-user"></label>
+          <label class="field"><span>Web UI password</span><input type="password" id="f-pass"></label>
+        </div>
+      </div>
+      <div class="actions spread">
+        <button class="secondary" data-goto="welcome">← Back</button>
+        <button id="btn-config-next">Install →</button>
+      </div>
+    </section>
+
+    <!-- INSTALL -->
+    <section class="page hidden" id="page-install">
+      <h2>Installing <span id="inst-spin" class="spinner"></span></h2>
+      <p class="sub">Provisioning containers and wiring integrations…</p>
+      <div class="card hidden" id="pull-progress-wrap">
+        <div class="progress-head">
+          <b id="pull-progress-label">Downloading Docker images…</b>
+          <span id="pull-progress-pct">0%</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="pull-progress-fill"></div>
+        </div>
+        <div class="hint" id="pull-progress-detail">Waiting to start…</div>
+      </div>
+      <div class="log" id="log"></div>
+    </section>
+
+    <!-- DONE -->
+    <section class="page hidden" id="page-done">
+      <h2>Stack is ready 🎉</h2>
+      <p class="sub">Open these from any device on your network:</p>
+      <div class="card"><div class="svc-links" id="svc-links"></div></div>
+      <div class="card">
+        <b>Do you want to do the basic Arr setup now?</b>
+        <p class="hint">Add trackers to Prowlarr and configure subtitles. You can also do it later.</p>
+      </div>
+      <div class="actions spread">
+        <button class="secondary" data-goto="finish">Skip setup</button>
+        <button id="btn-start-setup">Start basic setup →</button>
+      </div>
+    </section>
+
+    <!-- TRACKERS -->
+    <section class="page hidden" id="page-trackers">
+      <h2>Prowlarr — Trackers</h2>
+      <p class="sub">Type to filter Prowlarr's full catalog. Private trackers that need a login open a browser window so you can sign in — the cookie is saved automatically.</p>
+      <div class="card">
+        <input type="text" id="tracker-search" placeholder="Start typing to filter trackers (e.g. 'torrentleech', 'nyaa', '1337x')…" autocomplete="off">
+        <div class="hint" id="tracker-count"></div>
+        <div class="tracker-list" id="tracker-list" style="margin-top:12px;"></div>
+      </div>
+      <div class="card">
+        <b>Added trackers:</b> <span id="added-trackers">none yet</span>
+      </div>
+      <div class="actions spread">
+        <button class="secondary" data-goto="done">← Back</button>
+        <button id="btn-trackers-next">Next: Subtitles →</button>
+      </div>
+    </section>
+
+    <!-- SUBTITLES -->
+    <section class="page hidden" id="page-subtitles">
+      <h2>Bazarr — Subtitles</h2>
+      <p class="sub">Choose your subtitle language and providers. <b>English is always kept as a fallback</b> when your language isn't available.</p>
+      <div class="card">
+        <label class="field"><span>Primary subtitle language</span>
+          <select id="sub-language"></select>
+        </label>
+        <div class="hint" id="fallback-hint"></div>
+      </div>
+      <div class="card">
+        <b>Subtitle providers</b>
+        <p class="hint">Pick one or more. Some need an account; cookie-based ones open a login window.</p>
+        <div class="provider-list" id="provider-list"></div>
+      </div>
+      <div class="actions spread">
+        <button class="secondary" data-goto="trackers">← Back</button>
+        <button id="btn-subtitles-next">Apply &amp; continue →</button>
+      </div>
+    </section>
+
+    <!-- EXTRAS -->
+    <section class="page hidden" id="page-extras">
+      <h2>Quality</h2>
+      <p class="sub">Choose resolution, allowed release sources, and a max bitrate. Sonarr &amp; Radarr will apply this as profile <b>piratefish_default</b>.</p>
+      <div class="card">
+        <b>Resolution</b>
+        <p class="hint">Only releases matching this resolution are allowed.</p>
+        <div id="quality-options" class="quality-pills"></div>
+
+        <b>Allowed release source types</b>
+        <p class="hint">Based on Sonarr/Radarr "Qualities Defined" sources (e.g., BluRay, WEB-DL, WEBRip, HDTV).</p>
+        <div id="quality-release-types" class="quality-release-types"></div>
+
+        <b>Maximum bitrate</b>
+        <div class="quality-bitrate">
+          <input type="range" id="quality-bitrate" min="1" max="40" step="0.5" value="8">
+          <div class="quality-bitrate-row">
+            <span id="quality-bitrate-value">8.0 Mbps</span>
+            <span class="hint" id="quality-bitrate-hint">≈ 3.60 GB/hour</span>
+          </div>
+        </div>
+        <div class="hint" id="quality-status" style="margin-top:10px;"></div>
+      </div>
+      <div class="actions spread">
+        <button class="secondary" data-goto="subtitles">← Back</button>
+        <button id="btn-extras-next">Apply &amp; finish →</button>
+      </div>
+    </section>
+
+    <!-- FINISH -->
+    <section class="page hidden" id="page-finish">
+      <h2>All done ✅</h2>
+      <p class="sub">Your stack is installed, wired, and ready.</p>
+      <div class="card"><div class="svc-links" id="svc-links-2"></div></div>
+      <div class="card">
+        <b>Web UI login:</b> <span id="fin-creds"></span>
+        <p class="hint">Also saved to install-report.txt in your data folder.</p>
+      </div>
+      <div class="actions"><button id="btn-open-dash">Open dashboard</button></div>
+    </section>
+  </main>
+</div>
+
+<div class="modal-bg hidden" id="modal-bg"><div class="modal" id="modal"></div></div>
+<div class="toast hidden" id="toast"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
